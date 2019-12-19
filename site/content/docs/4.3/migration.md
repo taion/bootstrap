@@ -89,6 +89,7 @@ Changes to Reboot, typography, tables, and more.
 - Renamed `.custom-range` to `.form-range` (including variables).
 - Dropped `.form-group` for margin utilities (we've replaced our docs examples with `.mb-3`).
 - Dropped support for `.form-control-plaintext` inside `.input-group`s.
+- Dropped `.input-group-append` and `.input-group-prepend`. You can now just add buttons and `.input-group-text` as direct children of the input groups.
 
 ## Components
 
