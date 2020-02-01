@@ -136,7 +136,7 @@ class Dropdown {
       return
     }
 
-    const isActive = this._menu.classList.contains(ClassName.SHOW)
+    const isActive = this._element.classList.contains(ClassName.SHOW)
 
     Dropdown.clearMenus()
 
@@ -157,7 +157,7 @@ class Dropdown {
       relatedTarget: this._element
     }
 
-    const showEvent = EventHandler.trigger(parent, Event.SHOW, relatedTarget)
+    const showEvent = EventHandler.trigger(this._element, Event.SHOW, relatedTarget)
 
     if (showEvent.defaultPrevented) {
       return
@@ -206,7 +206,7 @@ class Dropdown {
     this._element.setAttribute('aria-expanded', true)
 
     Manipulator.toggleClass(this._menu, ClassName.SHOW)
-    Manipulator.toggleClass(parent, ClassName.SHOW)
+    Manipulator.toggleClass(this._element, ClassName.SHOW)
     EventHandler.trigger(parent, Event.SHOWN, relatedTarget)
   }
 
@@ -231,7 +231,7 @@ class Dropdown {
     }
 
     Manipulator.toggleClass(this._menu, ClassName.SHOW)
-    Manipulator.toggleClass(parent, ClassName.SHOW)
+    Manipulator.toggleClass(this._element, ClassName.SHOW)
     EventHandler.trigger(parent, Event.HIDDEN, relatedTarget)
   }
 
@@ -280,9 +280,7 @@ class Dropdown {
   }
 
   _getMenuElement() {
-    const parent = Dropdown.getParentFromElement(this._element)
-
-    return SelectorEngine.findOne(Selector.MENU, parent)
+    return SelectorEngine.next(this._element, Selector.MENU)[0]
   }
 
   _getPlacement() {
@@ -404,14 +402,14 @@ class Dropdown {
       }
 
       const dropdownMenu = context._menu
-      if (!parent.classList.contains(ClassName.SHOW)) {
+      if (!toggles[i].classList.contains(ClassName.SHOW)) {
         continue
       }
 
       if (event && ((event.type === 'click' &&
           /input|textarea/i.test(event.target.tagName)) ||
           (event.type === 'keyup' && event.which === TAB_KEYCODE)) &&
-          parent.contains(event.target)) {
+          dropdownMenu.contains(event.target)) {
         continue
       }
 
@@ -434,7 +432,7 @@ class Dropdown {
       }
 
       dropdownMenu.classList.remove(ClassName.SHOW)
-      parent.classList.remove(ClassName.SHOW)
+      toggles[i].classList.remove(ClassName.SHOW)
       EventHandler.trigger(parent, Event.HIDDEN, relatedTarget)
     }
   }
@@ -467,11 +465,12 @@ class Dropdown {
     }
 
     const parent = Dropdown.getParentFromElement(this)
-    const isActive = parent.classList.contains(ClassName.SHOW)
+    const isActive = this.classList.contains(ClassName.SHOW)
 
     if (!isActive || (isActive && (event.which === ESCAPE_KEYCODE || event.which === SPACE_KEYCODE))) {
       if (event.which === ESCAPE_KEYCODE) {
-        SelectorEngine.findOne(Selector.DATA_TOGGLE, parent).focus()
+        const button = this.matches(Selector.DATA_TOGGLE) ? this : SelectorEngine.prev(this, Selector.DATA_TOGGLE)[0]
+        button.focus()
       }
 
       Dropdown.clearMenus()
